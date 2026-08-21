@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>红涂大师 — 珠三角工厂地坪翻新专家</title>
+<style>
+:root {
+  --color-canvas: #111111;
+  --color-surface: #1a1a1a;
+  --color-surface-2: #222222;
+  --color-ink: #ffffff;
+  --color-muted: #a0a0a0;
+  --color-muted-2: #666666;
+  --color-brand: #C8102E;
+  --color-brand-dark: #a00d24;
+  --color-overlay: rgba(0, 0, 0, 0.65);
+  --color-overlay-heavy: rgba(0, 0, 0, 0.8);
+  --color-rule: rgba(255, 255, 255, 0.08);
+  --color-rule-light: rgba(255, 255, 255, 0.15);
+  --font-display: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-body: system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --max-width: 1280px;
+  --section-padding: clamp(4rem, 10vw, 8rem);
+  --side-padding: clamp(1.25rem, 4vw, 3rem);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  line-height: 1.6;
+  font-size: 16px;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ── Disclaimer ── */
+.disclaimer {
+  background: var(--color-surface-2);
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  text-align: center;
+  padding: 0.5rem var(--side-padding);
+  line-height: 1.5;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+/* ── Header ── */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(17, 17, 17, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-rule);
+  padding: 0 var(--side-padding);
+}
+
+.header-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.logo-link img {
+  height: 36px;
+  width: auto;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.header-nav a {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  transition: color 0.2s;
+}
+
+.header-nav a:hover {
+  color: var(--color-ink);
+}
+
+.header-cta {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.header-cta:hover {
+  background: var(--color-brand-dark);
+}
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.3) 40%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 860px;
+  padding: var(--section-padding) var(--side-padding);
+}
+
+.hero-badge {
+  display: inline-block;
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 0.35rem 1rem;
+  border-radius: 2px;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.25rem;
+}
+
+.hero-sub {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.hero-cta-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 0.9rem 2rem;
+  border-radius: 4px;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-primary:hover {
+  background: var(--color-brand-dark);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 0.9rem 2rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ── Focus & Motion ── */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
+}
+
+/* ── Section common ── */
+.section {
+  padding: var(--section-padding) var(--side-padding);
+}
+
+.section-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.section-label {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-brand);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-bottom: 1rem;
+}
+
+.section-desc {
+  font-size: 1.05rem;
+  color: var(--color-muted);
+  max-width: 640px;
+  line-height: 1.7;
+}
+
+/* ── Pain Points ── */
+.pain-section {
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.pain-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.pain-card {
+  padding: 2rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-rule-light);
+  border-radius: 6px;
+}
+
+.pain-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1.25rem;
+  color: var(--color-brand);
+}
+
+.pain-card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.pain-card p {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+.pain-cta {
+  text-align: center;
+  margin-top: 3.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--color-rule);
+}
+
+.pain-cta p {
+  font-size: clamp(1.25rem, 2.5vw, 1.6rem);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1.5rem;
+}
+
+/* ── Gallery ── */
+.gallery-section {
+  background: var(--color-canvas);
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 3rem;
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.03);
+}
+
+.gallery-item-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+  display: flex;
+  align-items: flex-end;
+  padding: 1.25rem;
+}
+
+.gallery-item-info h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.gallery-item-info span {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.gallery-cta {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+/* ── Services ── */
+.services-section {
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-rule);
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+.service-card {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  min-height: 360px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.service-card-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.service-card-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.service-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 60%);
+}
+
+.service-card-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem;
+  width: 100%;
+}
+
+.service-card-content h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.service-card-content p {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.service-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-brand);
+  background: rgba(200, 16, 46, 0.15);
+  border: 1px solid rgba(200, 16, 46, 0.3);
+  padding: 0.2rem 0.6rem;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+}
+
+/* ── Trust ── */
+.trust-section {
+  background: var(--color-canvas);
+  text-align: center;
+  border-top: 1px solid var(--color-rule);
+}
+
+.trust-hero-text {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.trust-hero-text span {
+  color: var(--color-brand);
+}
+
+.trust-logo-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+}
+
+.trust-logo-line img {
+  height: 32px;
+  width: auto;
+}
+
+.trust-logo-line span {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.trust-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  padding-top: 3rem;
+  border-top: 1px solid var(--color-rule);
+}
+
+.trust-stat-value {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: var(--color-ink);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.trust-stat-value span {
+  font-size: 0.5em;
+  font-weight: 500;
+  color: var(--color-muted);
+}
+
+.trust-stat-label {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+/* ── CTA / Contact ── */
+.contact-section {
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-rule);
+}
+
+.contact-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.contact-left h2 {
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.contact-left p {
+  font-size: 1rem;
+  color: var(--color-muted);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.qr-block {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-rule-light);
+  border-radius: 8px;
+}
+
+.qr-block img {
+  width: 120px;
+  height: 120px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.qr-info h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.qr-info p {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin-bottom: 0;
+}
+
+.phone-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-brand);
+}
+
+.contact-form {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-rule-light);
+  border-radius: 8px;
+  padding: 2.5rem;
+}
+
+.contact-form h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.contact-form .form-desc {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.03em;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.95rem;
+  font-family: var(--font-body);
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  border: 1px solid var(--color-rule-light);
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--color-brand);
+}
+
+.form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-submit {
+  width: 100%;
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.85rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 0.5rem;
+}
+
+.form-submit:hover {
+  background: var(--color-brand-dark);
+}
+
+/* ── Footer ── */
+.site-footer {
+  padding: 2.5rem var(--side-padding);
+  border-top: 1px solid var(--color-rule);
+  background: var(--color-canvas);
+}
+
+.footer-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.footer-left img {
+  height: 28px;
+  width: auto;
+}
+
+.footer-left span {
+  font-size: 0.8rem;
+  color: var(--color-muted-2);
+}
+
+.footer-right {
+  font-size: 0.75rem;
+  color: var(--color-muted-2);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .services-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-nav {
+    display: none;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .service-card {
+    min-height: 280px;
+  }
+
+  .trust-stats {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .contact-inner {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .qr-block {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pain-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-cta-group {
+    flex-direction: column;
+  }
+
+  .hero-cta-group a {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── Print ── */
+@media print {
+  .site-header,
+  .disclaimer {
+    position: static;
+  }
+
+  .hero {
+    min-height: auto;
+    page-break-after: always;
+  }
+
+  .hero-bg img {
+    display: none;
+  }
+
+  .hero-overlay {
+    background: none;
+  }
+
+  .hero-content {
+    color: #000;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .header-cta {
+    border: 1px solid #000;
+    background: none;
+    color: #000;
+  }
+
+  .section {
+    padding: 2rem 0;
+  }
+
+  .gallery-item-overlay,
+  .service-card-overlay {
+    background: none;
+  }
+
+  .gallery-item-info h4,
+  .gallery-item-info span,
+  .service-card-content p {
+    color: #000;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Disclaimer -->
+<div class="disclaimer">
+  📌 本方案中的工业地坪效果图为视觉参考，正式网站需替换为红涂大师自有案例实拍照片
+</div>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="#hero" class="logo-link" aria-label="红涂大师首页">
+      <img src="https://www.coze.cn/s/iR_iejz07Qk/" alt="红涂大师" width="120" height="36">
+    </a>
+    <nav class="header-nav" aria-label="主导航">
+      <a href="#gallery">案例效果</a>
+      <a href="#services">服务范围</a>
+      <a href="#trust">质保承诺</a>
+      <a href="#contact" class="header-cta">免费报价</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero-bg">
+    <img src="https://s.coze.cn/image/8NL67F28qdU/" alt="灰色环氧地坪工厂全景——明亮的工厂车间地面效果" width="1920" height="1080">
+  </div>
+  <div class="hero-overlay" aria-hidden="true"></div>
+  <div class="hero-content">
+    <div class="hero-badge">珠三角工厂地坪翻新专家</div>
+    <h1>你的工厂地面，<br>该换个样子了</h1>
+    <p class="hero-sub">5年质保 · 坏了免费修 · 安心托付，工厂涂装管家</p>
+    <div class="hero-cta-group">
+      <a href="#contact" class="btn-primary">免费获取报价 →</a>
+      <a href="#gallery" class="btn-secondary">查看案例效果</a>
+    </div>
+  </div>
+</section>
+
+<!-- Pain Points -->
+<section class="section pain-section" id="pain">
+  <div class="section-inner">
+    <span class="section-label">常见问题</span>
+    <h2 class="section-title">你的车间地面，是不是也这样？</h2>
+    <p class="section-desc">工厂地面的问题不解决，不仅影响生产环境，还会拖慢效率、增加清洁成本。</p>
+
+    <div class="pain-grid">
+      <div class="pain-card">
+        <svg class="pain-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="6" y="6" width="36" height="36" rx="3"/>
+          <path d="M14 16 Q18 14 22 18 Q26 22 30 16 Q34 10 38 16" stroke-linecap="round"/>
+          <circle cx="20" cy="30" r="2" fill="currentColor"/>
+          <circle cx="32" cy="28" r="1.5" fill="currentColor"/>
+          <circle cx="26" cy="34" r="1" fill="currentColor"/>
+        </svg>
+        <h3>起灰起砂</h3>
+        <p>设备、产品落满灰，影响产品品质，工人也遭殃。</p>
+      </div>
+
+      <div class="pain-card">
+        <svg class="pain-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="6" y="6" width="36" height="36" rx="3"/>
+          <path d="M12 24 L18 20 L24 28 L30 18 L36 26" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 36 L20 32 L24 36 L28 30 L32 36" stroke-linecap="round" stroke-dasharray="2 3"/>
+        </svg>
+        <h3>地面开裂</h3>
+        <p>叉车走过颠簸跳动，地面裂缝越来越大，安全隐患突出。</p>
+      </div>
+
+      <div class="pain-card">
+        <svg class="pain-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="6" y="6" width="36" height="36" rx="3"/>
+          <path d="M10 20 Q16 16 22 22 Q28 28 34 20" stroke-linecap="round"/>
+          <path d="M12 30 C14 26 18 28 20 32 C22 28 26 26 30 30 C32 28 36 26 38 28" stroke-linecap="round" stroke-dasharray="2 2"/>
+        </svg>
+        <h3>旧涂层起皮</h3>
+        <p>脱落的涂层难看又不安全，客户来访印象差，影响订单。</p>
+      </div>
+
+      <div class="pain-card">
+        <svg class="pain-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="6" y="6" width="36" height="36" rx="3"/>
+          <ellipse cx="24" cy="28" rx="10" ry="4" fill="currentColor" opacity="0.3"/>
+          <path d="M18 22 Q20 18 24 22 Q28 26 30 22" stroke-linecap="round"/>
+          <path d="M16 34 L32 34" stroke-linecap="round" stroke-dasharray="1 3"/>
+        </svg>
+        <h3>油污渗渍</h3>
+        <p>油渍、化学品渗进地面洗不掉，怎么打扫都不干净。</p>
+      </div>
+    </div>
+
+    <div class="pain-cta">
+      <p>其实，只需要一步就能彻底解决</p>
+      <a href="#contact" class="btn-primary">立即咨询解决方案 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Gallery -->
+<section class="section gallery-section" id="gallery">
+  <div class="section-inner">
+    <span class="section-label">案例效果</span>
+    <h2 class="section-title">翻新后，你的工厂可以变成这样</h2>
+    <p class="section-desc">从破旧灰暗到干净明亮，地坪翻新让工厂焕然一新，提升形象与效率。</p>
+
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <img src="https://s.coze.cn/image/rHhu_7RiHEk/" alt="蓝色环氧地坪仓库纵深感效果图" width="640" height="400">
+        <div class="gallery-item-overlay">
+          <div class="gallery-item-info">
+            <h4>蓝色环氧 · 仓储空间</h4>
+            <span>800㎡ · 工期5天 · 环氧自流平</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item">
+        <img src="https://s.coze.cn/image/Gn-lGPOACDo/" alt="灰色环氧地坪加红色标线工厂效果图" width="640" height="400">
+        <div class="gallery-item-overlay">
+          <div class="gallery-item-info">
+            <h4>灰色环氧 · 标准车间</h4>
+            <span>1200㎡ · 工期7天 · 环氧砂浆</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item">
+        <img src="https://s.coze.cn/image/uJZHDNP6n6I/" alt="绿色通道加灰色工作区车间效果图" width="640" height="400">
+        <div class="gallery-item-overlay">
+          <div class="gallery-item-info">
+            <h4>功能分区 · 生产车间</h4>
+            <span>2000㎡ · 工期10天 · 环氧彩砂</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item">
+        <img src="https://s.coze.cn/image/zV9iGZJqAwQ/" alt="深色抛光混凝土地坪效果图" width="640" height="400">
+        <div class="gallery-item-overlay">
+          <div class="gallery-item-info">
+            <h4>抛光混凝土 · 重载区域</h4>
+            <span>600㎡ · 工期4天 · 混凝土密封固化</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item">
+        <img src="https://s.coze.cn/image/J0f4M-n3aMg/" alt="浅色环氧加蓝色分区现代化车间效果图" width="640" height="400">
+        <div class="gallery-item-overlay">
+          <div class="gallery-item-info">
+            <h4>彩色分区 · 电子厂车间</h4>
+            <span>1500㎡ · 工期8天 · 防静电环氧</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item">
+        <img src="https://s.coze.cn/image/mb2vwyQkG94/" alt="仓储货架与镜面地坪效果图" width="640" height="400">
+        <div class="gallery-item-overlay">
+          <div class="gallery-item-info">
+            <h4>镜面地坪 · 物流仓储</h4>
+            <span>3000㎡ · 工期12天 · 环氧自流平</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="gallery-cta">
+      <a href="#contact" class="btn-primary">免费获取报价方案 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Services -->
+<section class="section services-section" id="services">
+  <div class="section-inner">
+    <span class="section-label">服务范围</span>
+    <h2 class="section-title">专业涂料 · 简单用</h2>
+    <p class="section-desc">从车间地坪到厂房隔热，从安全划线到整体目视化，一站式解决工厂涂装需求。</p>
+
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-card-bg">
+          <img src="https://s.coze.cn/image/XQ27YxQASq0/" alt="浅灰色工厂蓝色立柱环氧地坪效果图" width="640" height="480">
+        </div>
+        <div class="service-card-overlay" aria-hidden="true"></div>
+        <div class="service-card-content">
+          <span class="service-tag">工厂车间标配</span>
+          <h3>环氧地坪</h3>
+          <p>耐磨、防尘、易清洁。适用于各类工厂车间、仓库，让您的生产环境焕然一新。</p>
+        </div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-card-bg">
+          <img src="https://s.coze.cn/image/Vzw4lzZAZMY/" alt="镜面级白色工业空间效果图" width="640" height="480">
+        </div>
+        <div class="service-card-overlay" aria-hidden="true"></div>
+        <div class="service-card-content">
+          <span class="service-tag">化工 / 食品级</span>
+          <h3>防腐地坪</h3>
+          <p>耐酸碱、抗化学品腐蚀，满足化工、食品加工等特殊行业的高标准要求。</p>
+        </div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-card-bg">
+          <img src="https://s.coze.cn/image/8NL67F28qdU/" alt="灰色环氧加黄色安全线工厂全景效果图" width="640" height="480">
+        </div>
+        <div class="service-card-overlay" aria-hidden="true"></div>
+        <div class="service-card-content">
+          <span class="service-tag">厂房降温</span>
+          <h3>隔热涂料</h3>
+          <p>有效降低厂房温度5-15°C，减少空调能耗，让工人工作更舒适，生产更高效。</p>
+        </div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-card-bg">
+          <img src="https://linemarkingaustralia.com.au/_next/image?url=%2Fassets%2Fservices%2Ffactory-floor-line-marking.webp&w=640&q=75" alt="工厂地面安全划线与目视化标识系统效果图" width="640" height="480">
+        </div>
+        <div class="service-card-overlay" aria-hidden="true"></div>
+        <div class="service-card-content">
+          <span class="service-tag">安全 + 效率</span>
+          <h3>目视化系统</h3>
+          <p>安全通道划线、区域标识、警示标识，让车间管理更规范，安全更有保障。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trust -->
+<section class="section trust-section" id="trust">
+  <div class="section-inner">
+    <span class="section-label">质保承诺</span>
+
+    <div class="trust-hero-text">
+      坏了我<span>免费修</span>，<br>管你<span>5年</span>
+    </div>
+
+    <div class="trust-logo-line">
+      <img src="https://www.coze.cn/s/hmYeEQXkBps/" alt="红涂大师品牌标识" width="32" height="32">
+      <span>红涂大师官方授权工程服务商</span>
+    </div>
+
+    <div class="trust-stats">
+      <div>
+        <div class="trust-stat-value">50,000<span>+ ㎡</span></div>
+        <div class="trust-stat-label">累计施工面积</div>
+      </div>
+      <div>
+        <div class="trust-stat-value">200<span>+ 家</span></div>
+        <div class="trust-stat-label">服务工厂数量</div>
+      </div>
+      <div>
+        <div class="trust-stat-value">5<span> 年</span></div>
+        <div class="trust-stat-label">超长质保期限</div>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 3rem;">
+      <a href="#contact" class="btn-primary">立即获取免费诊断 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section class="section contact-section" id="contact">
+  <div class="section-inner">
+    <div class="contact-inner">
+      <div class="contact-left">
+        <span class="section-label">联系我们</span>
+        <h2>扫码获取<br>免费地坪诊断 + 报价方案</h2>
+        <p>添加微信，发送工厂地面照片，24小时内获取专业诊断报告和透明报价方案。不收费、不套路，先看方案再决定。</p>
+
+        <div class="qr-block">
+          <img src="https://www.coze.cn/s/zmg9vopvV5c/" alt="微信二维码 - 红涂涂料管家小蓝" width="120" height="120">
+          <div class="qr-info">
+            <h4>微信扫码咨询</h4>
+            <p>红涂涂料管家-小蓝<br>24小时内回复 · 免费上门勘测</p>
+          </div>
+        </div>
+
+        <div class="phone-link">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+          </svg>
+          电话咨询：135-1078-4619
+        </div>
+      </div>
+
+      <div class="contact-form">
+        <h3>留下您的信息</h3>
+        <p class="form-desc">24小时内专人回复，免费上门勘测</p>
+
+        <div class="form-group">
+          <label for="name">您的姓名</label>
+          <input type="text" id="name" placeholder="请输入姓名">
+        </div>
+
+        <div class="form-group">
+          <label for="phone">联系电话</label>
+          <input type="tel" id="phone" placeholder="请输入手机号码">
+        </div>
+
+        <div class="form-group">
+          <label for="area">工厂面积（㎡）</label>
+          <input type="text" id="area" placeholder="例如：500">
+        </div>
+
+        <div class="form-group">
+          <label for="need">需求描述</label>
+          <textarea id="need" placeholder="简单描述您的地面问题或需求"></textarea>
+        </div>
+
+        <button type="button" class="form-submit">提交信息，获取免费报价</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-left">
+      <img src="https://www.coze.cn/s/hmYeEQXkBps/" alt="红涂大师" width="28" height="28">
+      <span>专业涂料 · 简单用 &nbsp;|&nbsp; 安心托付 · 工厂涂装管家</span>
+    </div>
+    <div class="footer-right">
+      © 红涂大师 珠三角服务（以中山为中心）
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

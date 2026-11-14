@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://hongtu-daxshi.cn/sitemap.xml
+Sitemap: https://hongtu-daxshi.cn/v4/sitemap.xml

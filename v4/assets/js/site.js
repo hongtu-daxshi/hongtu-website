@@ -1,346 +1,286 @@
-(function () {
-  "use strict";
+(() => {
+  'use strict';
+  const root = document.documentElement;
+  root.classList.add('js');
+  const $ = (selector, context = document) => context.querySelector(selector);
+  const $$ = (selector, context = document) => [...context.querySelectorAll(selector)];
+  const body = document.body;
+  const header = $('#siteHeader');
+  const motionToggle = $('#motionToggle');
+  const systemReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+  let storedMotion = null;
+  try { storedMotion = localStorage.getItem('hongtu-motion-v4'); } catch (_) { /* storage is optional */ }
+  let motion = systemReduced.matches ? 'reduced' : (storedMotion === 'reduced' ? 'reduced' : 'full');
+  let sceneZone = 0;
+  let sceneFocused = false;
+  let pointerX = 0;
+  let pointerY = 0;
+  let scrollTicking = false;
 
-  var root = document.documentElement;
-  var motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var motionToggle = document.getElementById("motionToggle");
-  var savedMotion = null;
-  try { savedMotion = window.localStorage.getItem("hongtu-motion"); } catch (ignore) {}
-  var manualReduced = savedMotion === "reduced";
-  var sceneController = null;
-  var sceneLive = false;
-  var sceneFailed = false;
-  var sceneViewport = document.getElementById("systemViewport");
-
-  function isReduced() {
-    return motionQuery.matches || manualReduced;
-  }
+  const sceneZones = [
+    { name: '空间界面', value: '让地面、墙面与钢构经得起生产、时间与验厂。', deliverables: '地坪系统 / 墙面天花 / 屋面 / 钢构防护', x: 7, y: 3, scale: 1.18 },
+    { name: '目视化标识', value: '让通道、区域与规则一眼可见，减少寻找和沟通。', deliverables: '功能分区 / 安全标识 / 动线 / 定置管理', x: 3, y: -5, scale: 1.2 },
+    { name: '环境与功能', value: '让照明、机电与环保配套真正服务生产，而不是各自为政。', deliverables: '照明 / 机电 / 环保配套 / 接口统管', x: 7, y: 10, scale: 1.2 },
+    { name: '厂区形象', value: '让客户从进门开始，就读到企业的秩序、标准与实力。', deliverables: '门头 / 外立面 / 参观动线 / 文化空间', x: -8, y: 5, scale: 1.2 },
+    { name: '管理可视化', value: '让目标、异常与责任进入现场，支持每天的经营管理。', deliverables: '生产看板 / 质量目视化 / 数字界面 / 管理标准', x: -2, y: -5, scale: 1.2 },
+    { name: '交付服务', value: '让生产、施工与长期维保不打架，一个主体负责到底。', deliverables: '现场诊断 / 夜间施工 / 13 项检查 / 5 年维保', x: -11, y: -4, scale: 1.18 }
+  ];
+  const expertise = [
+    { caption: '地坪、墙面与天花、屋面、钢构防护；以统一基面与材质标准，托住每天的生产。', note: 'AI 场景示意' },
+    { caption: '划线、安全标识、区域看板与定置管理；让人流、物流和参观路线各自清楚。', note: 'AI 场景示意' },
+    { caption: '照明、机电与环保配套由专业团队协同，红涂统一接口、进度与验收。', note: 'AI 场景示意' },
+    { caption: '门头、外立面、文化空间与参观动线；让厂区形象成为企业实力的一部分。', note: 'AI 场景示意' },
+    { caption: '生产、质量与数字看板进入真实现场；让管理者更快看到目标、异常与责任。', note: '项目资料照片' },
+    { caption: '现场诊断、夜间施工、逐项验收与长期维保；交付之后，仍然有人负责。', note: 'AI 场景示意' }
+  ];
 
   function applyMotion() {
-    var reduced = isReduced();
-    root.dataset.motion = reduced ? "reduced" : "full";
-    if (motionToggle) {
-      motionToggle.setAttribute("aria-pressed", String(reduced));
-      motionToggle.textContent = motionQuery.matches ? "已跟随系统减少动态" : (reduced ? "恢复完整动效" : "减弱动态效果");
-      motionToggle.disabled = motionQuery.matches;
-    }
-    if (sceneController) sceneController.setIntensity(reduced ? 0 : 1);
-    if (sceneViewport) {
-      sceneViewport.classList.toggle("is-flat", reduced || sceneFailed || !sceneLive);
-      sceneViewport.classList.toggle("is-live", !reduced && !sceneFailed && sceneLive);
-      var caption = sceneViewport.querySelector(".scene-caption");
-      if (caption) caption.textContent = reduced ? "AI 场景示意｜已减少动态，当前为照片版" : (sceneFailed ? "AI 场景示意｜当前设备使用照片版" : "三维总图为空间关系示意，不代替施工图");
-    }
+    root.dataset.motion = motion;
+    const reduced = motion === 'reduced';
+    motionToggle.setAttribute('aria-pressed', String(reduced));
+    motionToggle.textContent = systemReduced.matches ? '跟随系统：减弱动效' : (reduced ? '恢复完整动效' : '减弱动效');
+    motionToggle.disabled = systemReduced.matches;
+    root.classList.add('motion-ready');
+    root.classList.add('is-ready');
     if (reduced) {
-      document.querySelectorAll("[data-reveal], [data-reveal-item]").forEach(function (element) {
-        element.classList.add("is-visible");
-      });
-      var deliveryImage = document.querySelector(".delivery-visual > img");
-      if (deliveryImage) deliveryImage.style.transform = "none";
-    } else if (!sceneController && !sceneFailed) {
-      initialiseScene();
+      $$('.reveal').forEach(el => el.classList.add('is-visible'));
+      $('#vision').classList.add('is-visible');
     }
+    updateCamera();
+    updateScroll();
   }
 
-  if (motionToggle) {
-    motionToggle.addEventListener("click", function () {
-      manualReduced = !manualReduced;
-      try { window.localStorage.setItem("hongtu-motion", manualReduced ? "reduced" : "full"); } catch (ignore) {}
-      applyMotion();
+  function updateCamera() {
+    const camera = $('#heroCamera');
+    if (!camera) return;
+    const reduced = motion === 'reduced';
+    const zone = sceneZones[sceneZone];
+    const baseX = sceneFocused && !reduced ? zone.x : 0;
+    const baseY = sceneFocused && !reduced ? zone.y : 0;
+    const scale = sceneFocused && !reduced ? zone.scale : 1.03;
+    camera.style.setProperty('--camera-x', `${baseX + (reduced ? 0 : pointerX)}%`);
+    camera.style.setProperty('--camera-y', `${baseY + (reduced ? 0 : pointerY)}%`);
+    camera.style.setProperty('--camera-scale', String(scale));
+  }
+
+  function setSceneZone(index, focus = true) {
+    sceneZone = index;
+    sceneFocused = focus;
+    const zone = sceneZones[index];
+    $('#sceneNumber').textContent = `${String(index + 1).padStart(2, '0')} / 06`;
+    $('#sceneName').textContent = zone.name;
+    $('#sceneValue').textContent = zone.value;
+    $('#sceneDeliverables').textContent = zone.deliverables;
+    $$('[data-scene-zone]').forEach(button => {
+      const active = Number(button.dataset.sceneZone) === index;
+      button.classList.toggle('is-active', active);
+      if (button.getAttribute('role') === 'tab') button.setAttribute('aria-selected', String(active));
+      else button.setAttribute('aria-pressed', String(active));
     });
-  }
-  if (motionQuery.addEventListener) motionQuery.addEventListener("change", applyMotion);
-  else if (motionQuery.addListener) motionQuery.addListener(applyMotion);
-
-  var header = document.getElementById("siteHeader");
-  var hero = document.querySelector(".hero");
-  var progress = document.getElementById("readingProgress");
-  var ticking = false;
-
-  function updateScrollUI() {
-    var y = window.scrollY || window.pageYOffset;
-    if (header && hero) header.classList.toggle("is-solid", y > hero.offsetHeight - header.offsetHeight - 20);
-    if (progress) {
-      var distance = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      progress.style.transform = "scaleX(" + Math.min(1, y / distance) + ")";
-    }
-    if (!isReduced()) {
-      var visual = document.querySelector(".delivery-visual");
-      var image = visual && visual.querySelector(":scope > img");
-      if (visual && image) {
-        var rect = visual.getBoundingClientRect();
-        if (rect.bottom > 0 && rect.top < window.innerHeight) {
-          var centreOffset = (rect.top + rect.height / 2 - window.innerHeight / 2) / window.innerHeight;
-          image.style.transform = "translate3d(0," + (centreOffset * -7).toFixed(2) + "%,0) scale(1.02)";
-        }
-      }
-    }
-    ticking = false;
+    updateCamera();
   }
 
-  function requestScrollUI() {
-    if (!ticking) {
-      ticking = true;
-      window.requestAnimationFrame(updateScrollUI);
-    }
-  }
-  window.addEventListener("scroll", requestScrollUI, { passive: true });
-  window.addEventListener("resize", requestScrollUI, { passive: true });
-
-  var menuToggle = document.getElementById("menuToggle");
-  var mainNav = document.getElementById("mainNav");
-  function closeMenu() {
-    if (!menuToggle || !mainNav) return;
-    mainNav.classList.remove("is-open");
-    menuToggle.setAttribute("aria-expanded", "false");
-    menuToggle.textContent = "菜单";
-    document.body.classList.remove("menu-open");
-  }
-  if (menuToggle && mainNav) {
-    menuToggle.addEventListener("click", function () {
-      var open = !mainNav.classList.contains("is-open");
-      mainNav.classList.toggle("is-open", open);
-      menuToggle.setAttribute("aria-expanded", String(open));
-      menuToggle.textContent = open ? "关闭" : "菜单";
-      document.body.classList.toggle("menu-open", open);
+  function resetScene() {
+    sceneFocused = false;
+    pointerX = 0;
+    pointerY = 0;
+    $('#sceneNumber').textContent = '空间总览';
+    $('#sceneName').textContent = '一座视觉服务中心';
+    $('#sceneValue').textContent = '六个区域，一套视觉系统，一个责任主体。';
+    $('#sceneDeliverables').textContent = '从物理空间到管理现场，从建设到长期交付';
+    $$('[data-scene-zone]').forEach(button => {
+      button.classList.remove('is-active');
+      if (button.getAttribute('role') === 'tab') button.setAttribute('aria-selected', 'false');
+      else button.setAttribute('aria-pressed', 'false');
     });
-    mainNav.querySelectorAll("a").forEach(function (link) { link.addEventListener("click", closeMenu); });
-    document.addEventListener("keydown", function (event) { if (event.key === "Escape") closeMenu(); });
+    updateCamera();
   }
 
-  var revealGroups = document.querySelectorAll("[data-reveal-group]");
-  revealGroups.forEach(function (group) {
-    Array.prototype.forEach.call(group.children, function (child) {
-      if (!child.hasAttribute("data-reveal-item")) child.setAttribute("data-reveal-item", "");
+  function setExpertise(index) {
+    $$('[data-expertise]').forEach(button => {
+      const active = Number(button.dataset.expertise) === index;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-selected', String(active));
+      button.tabIndex = active ? 0 : -1;
+    });
+    $$('[data-expertise-image]').forEach(image => image.classList.toggle('is-active', Number(image.dataset.expertiseImage) === index));
+    const names = ['空间界面', '目视化标识', '环境与功能', '厂区形象', '管理可视化', '交付服务'];
+    $('#expertiseCaptionIndex').textContent = `${String(index + 1).padStart(2, '0')} / ${names[index]}`;
+    $('#expertiseCaptionText').textContent = expertise[index].caption;
+    $('#expertiseImageNote').textContent = expertise[index].note;
+  }
+
+  function updateScroll() {
+    scrollTicking = false;
+    const y = window.scrollY;
+    const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    $('#readingProgress').style.transform = `scaleX(${Math.min(1, y / max)})`;
+    const hero = $('#home');
+    const solidAt = hero.offsetHeight - header.offsetHeight - 12;
+    header.classList.toggle('is-solid', y > solidAt);
+    const heroProgress = Math.max(0, Math.min(1, y / Math.max(1, hero.offsetHeight)));
+    if (motion !== 'reduced') {
+      hero.style.setProperty('--scene-scroll', `${heroProgress * 3.5}%`);
+      hero.style.setProperty('--scene-scale', String(1 + heroProgress * .055));
+      const vision = $('#vision');
+      const rect = vision.getBoundingClientRect();
+      const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window.innerHeight + rect.height)));
+      vision.style.setProperty('--vision-shift', `${(progress - .5) * 9}%`);
+    } else {
+      hero.style.setProperty('--scene-scroll', '0%');
+      hero.style.setProperty('--scene-scale', '1');
+      $('#vision').style.setProperty('--vision-shift', '0%');
+    }
+    let current = '';
+    $$('main section[id]').forEach(section => {
+      if (section.getBoundingClientRect().top <= window.innerHeight * .35) current = section.id;
+    });
+    $$('.desktop-nav a').forEach(link => link.classList.toggle('is-current', link.getAttribute('href') === `#${current}`));
+  }
+
+  function requestScrollUpdate() {
+    if (!scrollTicking) {
+      scrollTicking = true;
+      requestAnimationFrame(updateScroll);
+    }
+  }
+
+  async function copyBrief() {
+    const status = $('#briefStatus');
+    const textarea = $('#briefTextarea');
+    const text = `红涂大师视觉服务中心｜现场沟通信息\n${textarea.value}`;
+    status.textContent = '正在复制现场信息…';
+    let copied = false;
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await Promise.race([
+          navigator.clipboard.writeText(text).then(() => { copied = true; }),
+          new Promise(resolve => setTimeout(resolve, 900))
+        ]);
+      } catch (_) { /* use the local fallback below */ }
+    }
+    if (!copied) {
+      const helper = document.createElement('textarea');
+      helper.value = text;
+      helper.setAttribute('readonly', '');
+      helper.style.position = 'fixed';
+      helper.style.opacity = '0';
+      document.body.appendChild(helper);
+      helper.select();
+      try { copied = document.execCommand('copy'); } catch (_) { copied = false; }
+      helper.remove();
+    }
+    status.textContent = copied
+      ? '沟通信息已复制，可补充后通过微信发送；也可以直接拨打 135-1078-4619。'
+      : '浏览器未允许自动复制，请直接在上方文本框中全选复制，或拨打 135-1078-4619。';
+  }
+
+  $$('[data-scene-zone]').forEach(button => {
+    button.addEventListener('click', () => setSceneZone(Number(button.dataset.sceneZone)));
+  });
+  $('.hero-zone-nav').addEventListener('keydown', event => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    let next = sceneZone;
+    if (event.key === 'ArrowLeft') next = (sceneZone + 5) % 6;
+    if (event.key === 'ArrowRight') next = (sceneZone + 1) % 6;
+    if (event.key === 'Home') next = 0;
+    if (event.key === 'End') next = 5;
+    setSceneZone(next);
+    $(`.hero-zone-nav [data-scene-zone="${next}"]`).focus();
+  });
+  $('#sceneReset').addEventListener('click', resetScene);
+
+  const heroScene = $('#heroScene');
+  heroScene.addEventListener('pointermove', event => {
+    if (motion === 'reduced' || !finePointer.matches) return;
+    const rect = heroScene.getBoundingClientRect();
+    pointerX = ((event.clientX - rect.left) / rect.width - .5) * 1.2;
+    pointerY = ((event.clientY - rect.top) / rect.height - .5) * .8;
+    updateCamera();
+  });
+  heroScene.addEventListener('pointerleave', () => { pointerX = 0; pointerY = 0; updateCamera(); });
+
+  $$('[data-expertise]').forEach(button => {
+    const index = Number(button.dataset.expertise);
+    button.addEventListener('click', () => setExpertise(index));
+    button.addEventListener('focus', () => setExpertise(index));
+    button.addEventListener('mouseenter', () => { if (finePointer.matches) setExpertise(index); });
+  });
+  $('.expertise-list').addEventListener('keydown', event => {
+    if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const current = $$('[data-expertise]').findIndex(button => button.getAttribute('aria-selected') === 'true');
+    let next = current;
+    if (event.key === 'ArrowUp') next = (current + 5) % 6;
+    if (event.key === 'ArrowDown') next = (current + 1) % 6;
+    if (event.key === 'Home') next = 0;
+    if (event.key === 'End') next = 5;
+    setExpertise(next);
+    $(`[data-expertise="${next}"]`).focus();
+  });
+
+  motionToggle.addEventListener('click', () => {
+    motion = motion === 'reduced' ? 'full' : 'reduced';
+    try { localStorage.setItem('hongtu-motion-v4', motion); } catch (_) { /* storage is optional */ }
+    applyMotion();
+  });
+  const handleSystemMotion = () => {
+    motion = systemReduced.matches ? 'reduced' : (storedMotion === 'reduced' ? 'reduced' : 'full');
+    applyMotion();
+  };
+  if (systemReduced.addEventListener) systemReduced.addEventListener('change', handleSystemMotion);
+
+  $('#menuToggle').addEventListener('click', () => {
+    const open = $('#menuToggle').getAttribute('aria-expanded') !== 'true';
+    $('#menuToggle').setAttribute('aria-expanded', String(open));
+    $('#mobileNav').hidden = !open;
+  });
+  $$('#mobileNav a').forEach(link => link.addEventListener('click', () => {
+    $('#menuToggle').setAttribute('aria-expanded', 'false');
+    $('#mobileNav').hidden = true;
+  }));
+  $('#briefButton').addEventListener('click', () => {
+    const open = $('#briefButton').getAttribute('aria-expanded') !== 'true';
+    $('#briefButton').setAttribute('aria-expanded', String(open));
+    $('#briefTool').hidden = !open;
+  });
+  $('#briefCopy').addEventListener('click', copyBrief);
+
+  $$('img').forEach(image => {
+    image.loading = 'eager';
+    image.addEventListener('error', () => {
+      if (image.dataset.retried === 'true') return;
+      image.dataset.retried = 'true';
+      const source = image.src.split('?')[0];
+      image.src = `${source}?reload=1`;
     });
   });
-  root.classList.add("motion-ready");
-  var revealElements = document.querySelectorAll("[data-reveal], [data-reveal-item]");
-  if ("IntersectionObserver" in window) {
-    var revealObserver = new IntersectionObserver(function (entries, observer) {
-      entries.forEach(function (entry) {
+
+  if ('IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
         }
       });
-    }, { rootMargin: "0px 0px -8%", threshold: 0.08 });
-    revealElements.forEach(function (element) { revealObserver.observe(element); });
+    }, { threshold: .12, rootMargin: '0px 0px -7% 0px' });
+    $$('.reveal').forEach(el => revealObserver.observe(el));
+    const visionObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); });
+    }, { threshold: .16 });
+    visionObserver.observe($('#vision'));
   } else {
-    revealElements.forEach(function (element) { element.classList.add("is-visible"); });
+    $$('.reveal').forEach(el => el.classList.add('is-visible'));
+    $('#vision').classList.add('is-visible');
   }
 
-  var sectionLinks = document.querySelectorAll(".main-nav a[href^='#']");
-  if ("IntersectionObserver" in window) {
-    var sectionObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        sectionLinks.forEach(function (link) {
-          link.classList.toggle("is-active", link.getAttribute("href") === "#" + entry.target.id);
-        });
-      });
-    }, { rootMargin: "-25% 0px -60%", threshold: 0 });
-    ["value", "system", "services", "delivery", "cases", "contact"].forEach(function (id) {
-      var section = document.getElementById(id);
-      if (section) sectionObserver.observe(section);
-    });
-  }
-
-  var systemModules = [
-    {
-      title: "空间界面",
-      scope: "从地面、墙面到钢结构与屋面，先检查基面和使用条件，再确定材料、颜色与施工边界。",
-      value: "让生产环境更整洁、耐用，也为后续分区、划线和客户参观打好底。",
-      outputs: ["基面检查", "材料建议", "色彩与分区", "翻新施工"]
-    },
-    {
-      title: "目视化标识",
-      scope: "把通道、区域、安全提示和现场看板放进同一套规则，明确谁走哪里、物放哪里、异常看哪里。",
-      value: "减少找路、找物和口头解释，让新员工、客户与审核人员更快读懂现场。",
-      outputs: ["功能分区", "通道划线", "安全标识", "现场看板"]
-    },
-    {
-      title: "环境功能",
-      scope: "把照明、机电与环保配套纳入现场规划；合作施工由红涂统管接口、进度和验收边界。",
-      value: "减少专业之间互相等待和返工，让配套真正服务生产，而不是后补的一堆管线。",
-      outputs: ["照明配合", "机电接口", "环保配套", "进度统管"]
-    },
-    {
-      title: "厂区形象",
-      scope: "从园区门头、前台到参观通道与文化展示，把客户实际经过的路线作为设计主线。",
-      value: "让客户在进入车间之前就理解企业实力，让销售接待有一条可重复使用的参观路径。",
-      outputs: ["门头入口", "接待空间", "参观动线", "文化展示"]
-    },
-    {
-      title: "管理可视化",
-      scope: "把区域责任、点检状态、生产信息和改善记录放到对应位置，明确更新人、更新频率和查看方式。",
-      value: "让问题更快被看见，让班组交接和日常检查有据可查，而不是只在汇报时整理现场。",
-      outputs: ["责任看板", "状态标识", "点检记录", "改善展示"]
-    },
-    {
-      title: "交付服务",
-      scope: "从现场体检、方案与排期，到夜间施工、逐项验收和维保，统一协调范围、接口与责任。",
-      value: "减少多头沟通，让工期、验收和售后都能找到同一个责任主体。",
-      outputs: ["现场体检", "夜间排期", "13项检查", "5年维保"]
-    }
-  ];
-  var systemTabs = Array.prototype.slice.call(document.querySelectorAll(".system-tab"));
-  var systemDetail = document.getElementById("systemDetail");
-  var activeSystem = 0;
-
-  function selectSystem(index, focusTab) {
-    if (index < 0 || index >= systemModules.length) return;
-    activeSystem = index;
-    var data = systemModules[index];
-    systemTabs.forEach(function (tab, tabIndex) {
-      var selected = tabIndex === index;
-      tab.classList.toggle("is-active", selected);
-      tab.setAttribute("aria-pressed", String(selected));
-      tab.tabIndex = selected ? 0 : -1;
-    });
-    document.getElementById("systemNumber").textContent = String(index + 1).padStart(2, "0") + " / 06";
-    document.getElementById("systemName").textContent = data.title;
-    document.getElementById("systemProvide").textContent = data.scope;
-    document.getElementById("systemValue").textContent = data.value;
-    var outputs = document.getElementById("systemDeliverables");
-    outputs.replaceChildren();
-    data.outputs.forEach(function (output) {
-      var item = document.createElement("li");
-      item.textContent = output;
-      outputs.appendChild(item);
-    });
-    if (systemDetail && !isReduced()) {
-      systemDetail.classList.remove("is-changing");
-      void systemDetail.offsetWidth;
-      systemDetail.classList.add("is-changing");
-    }
-    if (sceneController) sceneController.setZone(index);
-    if (focusTab) systemTabs[index].focus();
-  }
-  systemTabs.forEach(function (tab, index) {
-    tab.addEventListener("click", function () { selectSystem(index, false); });
-    tab.addEventListener("keydown", function (event) {
-      var next = null;
-      if (event.key === "ArrowRight" || event.key === "ArrowDown") next = (index + 1) % systemTabs.length;
-      if (event.key === "ArrowLeft" || event.key === "ArrowUp") next = (index - 1 + systemTabs.length) % systemTabs.length;
-      if (event.key === "Home") next = 0;
-      if (event.key === "End") next = systemTabs.length - 1;
-      if (next !== null) {
-        event.preventDefault();
-        selectSystem(next, true);
-      }
-    });
-  });
-  var sceneHome = document.getElementById("viewReset");
-  if (sceneHome) sceneHome.addEventListener("click", function () { if (sceneController) sceneController.setZone(-1); });
-
-  function initialiseScene() {
-    var canvas = document.getElementById("systemCanvas");
-    if (!canvas || !sceneViewport || !window.HongTuScene || isReduced() || sceneFailed || sceneController) return;
-    try {
-      sceneController = window.HongTuScene.init({
-        canvas: canvas,
-        onReady: function (controller) {
-          sceneLive = true;
-          sceneViewport.classList.add("is-live");
-          sceneViewport.classList.remove("is-flat");
-          if (controller) controller.setZone(activeSystem, true);
-        },
-        onError: function () {
-          sceneFailed = true;
-          sceneLive = false;
-          sceneViewport.classList.remove("is-live");
-          sceneViewport.classList.add("is-flat");
-          var caption = sceneViewport.querySelector(".scene-caption");
-          if (caption) caption.textContent = "AI 场景示意｜当前设备使用照片版";
-        }
-      });
-      if (sceneController) {
-        sceneController.setIntensity(isReduced() ? 0 : 1);
-        sceneController.setZone(activeSystem, true);
-      }
-    } catch (error) {
-      sceneFailed = true;
-      sceneLive = false;
-      sceneViewport.classList.remove("is-live");
-      sceneViewport.classList.add("is-flat");
-    }
-  }
-
-  var serviceTabs = Array.prototype.slice.call(document.querySelectorAll(".service-tabs [role='tab']"));
-  function selectService(key, focusTab) {
-    var selectedTab = null;
-    serviceTabs.forEach(function (tab) {
-      var selected = tab.dataset.service === key;
-      tab.setAttribute("aria-selected", String(selected));
-      tab.tabIndex = selected ? 0 : -1;
-      if (selected) selectedTab = tab;
-    });
-    document.querySelectorAll(".service-panel").forEach(function (panel) {
-      var selected = panel.dataset.servicePanel === key;
-      panel.hidden = !selected;
-      panel.classList.remove("is-entering");
-      if (selected && !isReduced()) {
-        void panel.offsetWidth;
-        panel.classList.add("is-entering");
-      }
-    });
-    if (focusTab && selectedTab) selectedTab.focus();
-  }
-  serviceTabs.forEach(function (tab, index) {
-    tab.addEventListener("click", function () { selectService(tab.dataset.service, false); });
-    tab.addEventListener("keydown", function (event) {
-      var next = null;
-      if (event.key === "ArrowRight" || event.key === "ArrowDown") next = (index + 1) % serviceTabs.length;
-      if (event.key === "ArrowLeft" || event.key === "ArrowUp") next = (index - 1 + serviceTabs.length) % serviceTabs.length;
-      if (event.key === "Home") next = 0;
-      if (event.key === "End") next = serviceTabs.length - 1;
-      if (next !== null) {
-        event.preventDefault();
-        selectService(serviceTabs[next].dataset.service, true);
-      }
-    });
-  });
-  document.querySelectorAll("[data-brief]").forEach(function (trigger) {
-    trigger.addEventListener("click", function () { selectService(trigger.dataset.brief, false);
-      if (briefStatus) briefStatus.textContent = "已选择「" + trigger.dataset.brief + "」，可复制清单后通过微信或电话继续沟通。"; });
-  });
-
-  var briefButton = document.getElementById("briefButton");
-  var briefTool = document.getElementById("briefTool");
-  var briefStatus = document.getElementById("briefStatus");
-  var briefTextarea = document.getElementById("briefTextarea");
-  function fallbackBriefCopy() {
-    if (!briefTextarea || !briefTool) return;
-    briefTool.classList.add("is-fallback");
-    briefTextarea.focus();
-    briefTextarea.select();
-    var copied = false;
-    try { copied = document.execCommand("copy"); } catch (ignore) {}
-    if (briefStatus) briefStatus.textContent = copied ? "已复制，可通过电话或微信发给我们。" : "请复制上方信息，通过电话或微信发给我们。";
-  }
-  if (briefButton) {
-    briefButton.addEventListener("click", async function () {
-      var content = "红涂大师现场沟通信息：\n厂区地址：\n大致面积：\n现场照片：\n最想解决的问题：\n期望施工时间：\n是否涉及验厂或特定指标：\n你的联系电话：\n\n电话联系：135-1078-4619";
-      if (briefStatus) briefStatus.textContent = "正在复制现场信息清单…";
-      if (navigator.clipboard && window.isSecureContext) {
-        try {
-          await Promise.race([
-            navigator.clipboard.writeText(content),
-            new Promise(function (resolve, reject) { window.setTimeout(reject, 900); })
-          ]);
-          if (briefStatus) briefStatus.textContent = "沟通信息已复制，可补充后通过微信发送；也可以直接拨打 135-1078-4619。";
-          briefButton.textContent = "已复制沟通信息";
-          return;
-        } catch (ignore) {}
-      }
-      fallbackBriefCopy();
-    });
-  }
-
+  window.addEventListener('scroll', requestScrollUpdate, { passive: true });
+  window.addEventListener('resize', requestScrollUpdate, { passive: true });
+  setExpertise(0);
+  setSceneZone(0, false);
   applyMotion();
-  initialiseScene();
-  selectSystem(0, false);
-  selectService("0", false);
-  updateScrollUI();
+  requestAnimationFrame(() => root.classList.add('is-ready'));
 })();

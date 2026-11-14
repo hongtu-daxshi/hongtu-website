@@ -1,4 +1,4 @@
-﻿/* Hallmark · theme:custom · posture:restrained · hero:stage · surface:absolute · nav:service · footer:minimal 路 checked:2026-11-14 */
+/* Hallmark · theme:custom · posture:restrained · hero:stage · surface:absolute · nav:service · footer:minimal · checked:2026-11-15 */
 /* hallmark:allow color-literals (38iii design tokens) */
 :root {
   --ink: #111417;
@@ -90,8 +90,8 @@ button:active, a:active { transform: translateY(1px); }
 .hero-shade { position: absolute; z-index: 1; inset: 0; background: var(--hero-shade), var(--hero-vertical); pointer-events: none; }
 .hero-grain { position: absolute; z-index: 1; inset: 0; box-shadow: inset 0 0 180px var(--shade-mid); pointer-events: none; }
 .hero-copy { position: absolute; z-index: 3; top: 46%; left: var(--pad); width: min(52vw, 790px); transform: translateY(-50%); }
-.hero-position { display: flex; align-items: center; gap: 14px; margin: 0 0 28px; color: var(--muted-dark); font-size: 14px; }
-.hero-position span { width: 32px; height: 2px; background: var(--red-bright); }
+.hero-position { display: flex; font-weight: 400; line-height: 1.7; align-items: center; gap: 14px; margin: 0 0 28px; color: var(--muted-dark); font-size: 14px; }
+.hero-position b { width: 32px; height: 2px; background: var(--red-bright); }
 .hero h1 { margin: 0; font-weight: 800; line-height: .98; letter-spacing: -.055em; }
 .hero h1 span, .hero h1 .hero-subtitle { display: block; }
 .hero h1 span { font-size: clamp(76px, 8.4vw, 142px); }
@@ -102,7 +102,7 @@ button:active, a:active { transform: translateY(1px); }
 .button:hover { transform: translateY(-3px); }
 .button-primary { background: var(--red); color: var(--paper); }
 .button-primary:hover { background: var(--red-dark); }
-.button-quiet { border-color: var(--line-dark-strong); background: var(--shade-light); color: var(--paper); }
+.button-quiet { border-color: var(--line-dark-strong); background: var(--transparent); color: var(--paper); }
 .button-quiet:hover { border-color: var(--paper); background: var(--glass-soft); }
 .js.motion-ready .hero-position, .js.motion-ready .hero h1 span, .js.motion-ready .hero h1 .hero-subtitle, .js.motion-ready .hero-lead, .js.motion-ready .hero-actions { opacity: 0; clip-path: inset(0 0 100% 0); transform: translateY(48px); }
 .js.motion-ready.is-ready .hero-position, .js.motion-ready.is-ready .hero h1 span, .js.motion-ready.is-ready .hero h1 .hero-subtitle, .js.motion-ready.is-ready .hero-lead, .js.motion-ready.is-ready .hero-actions { opacity: 1; clip-path: inset(0 0 0 0); transform: translateY(0); transition: opacity .8s var(--ease), transform 1s var(--ease-out), clip-path 1.1s var(--ease-out); }

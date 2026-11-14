@@ -13,18 +13,19 @@
   try { storedMotion = localStorage.getItem('hongtu-motion-v4'); } catch (_) { /* storage is optional */ }
   let motion = systemReduced.matches ? 'reduced' : (storedMotion === 'reduced' ? 'reduced' : 'full');
   let sceneZone = 0;
+  let sceneRequest = 0;
   let sceneFocused = false;
   let pointerX = 0;
   let pointerY = 0;
   let scrollTicking = false;
 
   const sceneZones = [
-    { name: '空间界面', value: '让地面、墙面与钢构经得起生产、时间与验厂。', deliverables: '地坪系统 / 墙面天花 / 屋面 / 钢构防护', x: 7, y: 3, scale: 1.18 },
-    { name: '目视化标识', value: '让通道、区域与规则一眼可见，减少寻找和沟通。', deliverables: '功能分区 / 安全标识 / 动线 / 定置管理', x: 3, y: -5, scale: 1.2 },
-    { name: '环境与功能', value: '让照明、机电与环保配套真正服务生产，而不是各自为政。', deliverables: '照明 / 机电 / 环保配套 / 接口统管', x: 7, y: 10, scale: 1.2 },
-    { name: '厂区形象', value: '让客户从进门开始，就读到企业的秩序、标准与实力。', deliverables: '门头 / 外立面 / 参观动线 / 文化空间', x: -8, y: 5, scale: 1.2 },
-    { name: '管理可视化', value: '让目标、异常与责任进入现场，支持每天的经营管理。', deliverables: '生产看板 / 质量目视化 / 数字界面 / 管理标准', x: -2, y: -5, scale: 1.2 },
-    { name: '交付服务', value: '让生产、施工与长期维保不打架，一个主体负责到底。', deliverables: '现场诊断 / 夜间施工 / 13 项检查 / 5 年维保', x: -11, y: -4, scale: 1.18 }
+    { name: '空间界面', value: '让地面、墙面与钢构经得起生产、时间与验厂。', deliverables: '地坪系统 / 墙面天花 / 屋面 / 钢构防护', image: 'assets/img/detail-space.jpg', x: 7, y: 3, scale: 1.18 },
+    { name: '目视化标识', value: '让通道、区域与规则一眼可见，减少寻找和沟通。', deliverables: '功能分区 / 安全标识 / 动线 / 定置管理', image: 'assets/img/detail-visual.jpg', x: 3, y: -5, scale: 1.2 },
+    { name: '环境与功能', value: '让照明、机电与环保配套真正服务生产，而不是各自为政。', deliverables: '照明 / 机电 / 环保配套 / 接口统管', image: 'assets/img/detail-environment.jpg', x: 7, y: 10, scale: 1.2 },
+    { name: '厂区形象', value: '让客户从进门开始，就读到企业的秩序、标准与实力。', deliverables: '门头 / 外立面 / 参观动线 / 文化空间', image: 'assets/img/detail-image.jpg', x: -8, y: 5, scale: 1.2 },
+    { name: '管理可视化', value: '让目标、异常与责任进入现场，支持每天的经营管理。', deliverables: '生产看板 / 质量目视化 / 数字界面 / 管理标准', image: 'assets/img/detail-management.jpg', x: -2, y: -5, scale: 1.2 },
+    { name: '交付服务', value: '让生产、施工与长期维保不打架，一个主体负责到底。', deliverables: '现场诊断 / 夜间施工 / 13 项检查 / 5 年维保', image: 'assets/img/detail-delivery.jpg', x: -11, y: -4, scale: 1.18 }
   ];
   const expertise = [
     { caption: '地坪、墙面与天花、屋面、钢构防护；以统一基面与材质标准，托住每天的生产。', note: 'AI 场景示意' },
@@ -45,7 +46,7 @@
     root.classList.add('is-ready');
     if (reduced) {
       $$('.reveal').forEach(el => el.classList.add('is-visible'));
-      $('#vision').classList.add('is-visible');
+      $('#vision')?.classList.add('is-visible');
     }
     updateCamera();
     updateScroll();
@@ -68,10 +69,19 @@
     sceneZone = index;
     sceneFocused = focus;
     const zone = sceneZones[index];
+    const hero = $('#home');
+    hero.classList.remove('is-zoomed');
+    $('#sceneZoom').textContent = '继续放大';
+    $('#sceneZoom').setAttribute('aria-pressed', 'false');
     $('#sceneNumber').textContent = `${String(index + 1).padStart(2, '0')} / 06`;
     $('#sceneName').textContent = zone.name;
     $('#sceneValue').textContent = zone.value;
     $('#sceneDeliverables').textContent = zone.deliverables;
+    const serviceLink = $('#sceneServiceLink');
+    if (serviceLink) {
+      serviceLink.href = `services.html#cap-${index}`;
+      serviceLink.textContent = '查看此项服务';
+    }
     $$('[data-scene-zone]').forEach(button => {
       const active = Number(button.dataset.sceneZone) === index;
       button.classList.toggle('is-active', active);
@@ -79,16 +89,39 @@
       else button.setAttribute('aria-pressed', String(active));
     });
     updateCamera();
+    if (!focus) return;
+    const detailImage = $('#sceneDetailImage');
+    detailImage.src = zone.image;
+    detailImage.alt = `${zone.name}高清局部场景示意`;
+    $('#sceneViewLabel').textContent = `${zone.name}｜高清局部场景`;
+    $('#sceneMode').textContent = `${zone.name}｜局部细节`;
+    $('#sceneInstruction').textContent = '点击其他编号切换';
+    $('#sceneDetailView').setAttribute('aria-hidden', 'false');
+    $('#sceneZoom').hidden = false;
+    hero.classList.add('is-detail');
   }
 
   function resetScene() {
+    sceneRequest += 1;
     sceneFocused = false;
     pointerX = 0;
     pointerY = 0;
+    const hero = $('#home');
+    hero.classList.remove('is-detail', 'is-zoomed');
+    $('#sceneDetailView').setAttribute('aria-hidden', 'true');
+    $('#sceneZoom').hidden = true;
+    $('#sceneZoom').setAttribute('aria-pressed', 'false');
+    $('#sceneMode').textContent = '厂区总览';
+    $('#sceneInstruction').textContent = '选择圆圈，展开局部细节';
     $('#sceneNumber').textContent = '空间总览';
     $('#sceneName').textContent = '一座视觉服务中心';
     $('#sceneValue').textContent = '六个区域，一套视觉系统，一个责任主体。';
     $('#sceneDeliverables').textContent = '从物理空间到管理现场，从建设到长期交付';
+    const serviceLink = $('#sceneServiceLink');
+    if (serviceLink) {
+      serviceLink.href = 'services.html#capabilities';
+      serviceLink.textContent = '查看六项服务';
+    }
     $$('[data-scene-zone]').forEach(button => {
       button.classList.remove('is-active');
       if (button.getAttribute('role') === 'tab') button.setAttribute('aria-selected', 'false');
@@ -98,6 +131,7 @@
   }
 
   function setExpertise(index) {
+    if (!$('#expertiseCaptionIndex')) return;
     $$('[data-expertise]').forEach(button => {
       const active = Number(button.dataset.expertise) === index;
       button.classList.toggle('is-active', active);
@@ -124,19 +158,17 @@
       hero.style.setProperty('--scene-scroll', `${heroProgress * 3.5}%`);
       hero.style.setProperty('--scene-scale', String(1 + heroProgress * .055));
       const vision = $('#vision');
-      const rect = vision.getBoundingClientRect();
-      const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window.innerHeight + rect.height)));
-      vision.style.setProperty('--vision-shift', `${(progress - .5) * 9}%`);
+      if (vision) {
+        const rect = vision.getBoundingClientRect();
+        const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window.innerHeight + rect.height)));
+        vision.style.setProperty('--vision-shift', `${(progress - .5) * 9}%`);
+      }
     } else {
       hero.style.setProperty('--scene-scroll', '0%');
       hero.style.setProperty('--scene-scale', '1');
-      $('#vision').style.setProperty('--vision-shift', '0%');
+      $('#vision')?.style.setProperty('--vision-shift', '0%');
     }
-    let current = '';
-    $$('main section[id]').forEach(section => {
-      if (section.getBoundingClientRect().top <= window.innerHeight * .35) current = section.id;
-    });
-    $$('.desktop-nav a').forEach(link => link.classList.toggle('is-current', link.getAttribute('href') === `#${current}`));
+    // Current-page navigation is supplied by each HTML document.
   }
 
   function requestScrollUpdate() {
@@ -191,35 +223,56 @@
     $(`.hero-zone-nav [data-scene-zone="${next}"]`).focus();
   });
   $('#sceneReset').addEventListener('click', resetScene);
+  $('#sceneZoom').addEventListener('click', () => {
+    const hero = $('#home');
+    const zoomed = hero.classList.toggle('is-zoomed');
+    $('#sceneZoom').textContent = zoomed ? '还原细节' : '继续放大';
+    $('#sceneZoom').setAttribute('aria-pressed', String(zoomed));
+  });
 
   const heroScene = $('#heroScene');
   heroScene.addEventListener('pointermove', event => {
     if (motion === 'reduced' || !finePointer.matches) return;
     const rect = heroScene.getBoundingClientRect();
+    if (sceneFocused) {
+      if ($('#home').classList.contains('is-zoomed')) {
+        const x = Math.max(0, Math.min(100, (event.clientX - rect.left) / rect.width * 100));
+        const y = Math.max(0, Math.min(100, (event.clientY - rect.top) / rect.height * 100));
+        $('#sceneDetailImage').style.transformOrigin = `${x}% ${y}%`;
+      }
+      return;
+    }
     pointerX = ((event.clientX - rect.left) / rect.width - .5) * 1.2;
     pointerY = ((event.clientY - rect.top) / rect.height - .5) * .8;
     updateCamera();
   });
-  heroScene.addEventListener('pointerleave', () => { pointerX = 0; pointerY = 0; updateCamera(); });
+  heroScene.addEventListener('pointerleave', () => {
+    pointerX = 0;
+    pointerY = 0;
+    $('#sceneDetailImage').style.transformOrigin = 'center';
+    updateCamera();
+  });
 
-  $$('[data-expertise]').forEach(button => {
-    const index = Number(button.dataset.expertise);
-    button.addEventListener('click', () => setExpertise(index));
-    button.addEventListener('focus', () => setExpertise(index));
-    button.addEventListener('mouseenter', () => { if (finePointer.matches) setExpertise(index); });
-  });
-  $('.expertise-list').addEventListener('keydown', event => {
-    if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
-    event.preventDefault();
-    const current = $$('[data-expertise]').findIndex(button => button.getAttribute('aria-selected') === 'true');
-    let next = current;
-    if (event.key === 'ArrowUp') next = (current + 5) % 6;
-    if (event.key === 'ArrowDown') next = (current + 1) % 6;
-    if (event.key === 'Home') next = 0;
-    if (event.key === 'End') next = 5;
-    setExpertise(next);
-    $(`[data-expertise="${next}"]`).focus();
-  });
+  if ($('.expertise-list')) {
+    $$('[data-expertise]').forEach(button => {
+      const index = Number(button.dataset.expertise);
+      button.addEventListener('click', () => setExpertise(index));
+      button.addEventListener('focus', () => setExpertise(index));
+      button.addEventListener('mouseenter', () => { if (finePointer.matches) setExpertise(index); });
+    });
+    $('.expertise-list').addEventListener('keydown', event => {
+      if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const current = $$('[data-expertise]').findIndex(button => button.getAttribute('aria-selected') === 'true');
+      let next = current;
+      if (event.key === 'ArrowUp') next = (current + 5) % 6;
+      if (event.key === 'ArrowDown') next = (current + 1) % 6;
+      if (event.key === 'Home') next = 0;
+      if (event.key === 'End') next = 5;
+      setExpertise(next);
+      $(`[data-expertise="${next}"]`).focus();
+    });
+  }
 
   motionToggle.addEventListener('click', () => {
     motion = motion === 'reduced' ? 'full' : 'reduced';
@@ -241,12 +294,12 @@
     $('#menuToggle').setAttribute('aria-expanded', 'false');
     $('#mobileNav').hidden = true;
   }));
-  $('#briefButton').addEventListener('click', () => {
+  $('#briefButton')?.addEventListener('click', () => {
     const open = $('#briefButton').getAttribute('aria-expanded') !== 'true';
     $('#briefButton').setAttribute('aria-expanded', String(open));
     $('#briefTool').hidden = !open;
   });
-  $('#briefCopy').addEventListener('click', copyBrief);
+  $('#briefCopy')?.addEventListener('click', copyBrief);
 
   $$('img').forEach(image => {
     image.loading = 'eager';
@@ -268,13 +321,16 @@
       });
     }, { threshold: .12, rootMargin: '0px 0px -7% 0px' });
     $$('.reveal').forEach(el => revealObserver.observe(el));
-    const visionObserver = new IntersectionObserver(entries => {
-      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); });
-    }, { threshold: .16 });
-    visionObserver.observe($('#vision'));
+    const vision = $('#vision');
+    if (vision) {
+      const visionObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); });
+      }, { threshold: .16 });
+      visionObserver.observe(vision);
+    }
   } else {
     $$('.reveal').forEach(el => el.classList.add('is-visible'));
-    $('#vision').classList.add('is-visible');
+    $('#vision')?.classList.add('is-visible');
   }
 
   window.addEventListener('scroll', requestScrollUpdate, { passive: true });
@@ -282,5 +338,7 @@
   setExpertise(0);
   setSceneZone(0, false);
   applyMotion();
-  requestAnimationFrame(() => root.classList.add('is-ready'));
+  const markReady = () => root.classList.add('is-ready');
+  requestAnimationFrame(markReady);
+  setTimeout(markReady, 120);
 })();

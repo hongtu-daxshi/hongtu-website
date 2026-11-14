@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>404 — 红涂大师</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/css/site.css">
+<style>
+  .nf {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .nf-code {
+    font-family: var(--font-num);
+    font-size: clamp(88px, 16vw, 200px);
+    line-height: 0.86;
+    font-weight: 600;
+    color: var(--red);
+  }
+  .nf h1 {
+    margin-top: 18px;
+    font-size: clamp(30px, 4.4vw, 54px);
+    line-height: 1.16;
+    letter-spacing: -0.02em;
+  }
+  .nf p { margin-top: 16px; color: rgba(246, 243, 236, 0.72); max-width: 34em; }
+  .nf a.btn { margin-top: 30px; }
+</style>
+</head>
+<body>
+<section class="nf">
+  <div class="wrap">
+    <p class="nf-code">404</p>
+    <h1>这一页，不在总图上。</h1>
+    <p>地址可能变了，或者本来就没有这一页。回到首页，从现场总图重新看一遍。</p>
+    <a class="btn btn-red" href="/">回到首页</a>
+  </div>
+</section>
+</body>
+</html>

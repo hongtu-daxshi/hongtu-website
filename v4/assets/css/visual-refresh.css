@@ -234,3 +234,154 @@ html[data-motion="reduced"] .scene-detail-view { transform: none; }
 html:not(.js) .scene-detail, html:not(.js) .scene-toolbar button { display: none; }
 /* Top scrim keeps the transparent header legible over bright hero photography. */
 .page-hero::after{content:"";position:absolute;inset:0 0 auto;height:190px;z-index:-1;pointer-events:none;background:linear-gradient(180deg,var(--scrim-top) 0%,var(--scrim-top-soft) 58%,var(--transparent) 100%)}
+
+
+/* Hero composition revision: one continuous scene, one typographic hierarchy. */
+.hero {
+  height: max(840px, 100svh);
+  min-height: 840px;
+  padding: 0;
+  overflow: hidden;
+}
+.hero-layout { display: contents; }
+.hero-scene {
+  position: absolute;
+  z-index: 0;
+  inset: -3%;
+  width: auto;
+  transform: translate3d(0, var(--scene-scroll, 0%), 0) scale(var(--scene-scale, 1));
+  transform-origin: center;
+}
+.hero-camera { inset: 0; opacity: 1; }
+.hero-camera::after { display: none; }
+.hero-scene-image { object-position: 58% center; }
+.hero-shade { display: block; }
+.hero-grain { display: none; }
+.hero-copy {
+  position: absolute;
+  top: 43%;
+  left: var(--pad);
+  width: min(49vw, 720px);
+  transform: translateY(-50%);
+}
+.hero h1 { font-weight: 750; line-height: 1.02; letter-spacing: -.045em; }
+.hero h1 .hero-title-main {
+  margin: 0;
+  color: var(--paper);
+  font-size: clamp(72px, 7.2vw, 116px);
+  font-weight: inherit;
+  white-space: nowrap;
+}
+.hero h1 .hero-subtitle {
+  margin-top: 16px;
+  color: var(--paper);
+  font-size: clamp(38px, 4.1vw, 64px);
+  font-weight: inherit;
+  letter-spacing: -.035em;
+  white-space: nowrap;
+}
+.hero-position { margin-bottom: 28px; font-size: 13px; font-weight: 400; }
+.hero-lead { max-width: 510px; margin-top: 30px; font-size: 18px; font-weight: 400; line-height: 1.8; }
+.hero-actions { margin-top: 32px; }
+.hero .button { font-size: 14px; font-weight: 500; }
+.scene-toolbar { display: none; }
+.js .scene-detail-view {
+  z-index: 0;
+  inset: 0;
+  transform: scale(1.06);
+}
+.scene-detail-view img { object-position: center; }
+.scene-view-label { display: none; }
+.hero.is-detail .hero-camera { opacity: 0; transform: scale(1.12); }
+.hero.is-detail .scene-detail-view { opacity: 1; transform: scale(1); }
+.hero-scroll-cue { bottom: 104px; }
+.hero-zone-nav {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 0;
+  border-top: 1px solid var(--line-dark);
+  background: var(--glass-soft);
+}
+.hero-zone-nav button { min-height: 82px; font-size: 13px; font-weight: 400; }
+.hero-zone-nav button span { font-size: 20px; font-weight: 600; }
+.hero.is-detail .hero-zone-nav { display: none; }
+.js .scene-detail { display: none; }
+.js .hero.is-detail .scene-detail {
+  display: block;
+  position: absolute;
+  z-index: 4;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: auto;
+  padding: 20px var(--pad) 22px;
+  border-top: 2px solid var(--red);
+  background: var(--glass);
+  box-shadow: none;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.scene-detail-top { min-height: 28px; }
+.scene-detail-top span { font-size: 20px; }
+.scene-detail-actions { display: flex; align-items: center; gap: 24px; }
+.scene-detail-actions button { padding: 4px 0; background: var(--transparent); color: var(--paper); font-size: 12px; }
+#sceneZoom { border-bottom: 1px solid var(--red-bright); }
+.scene-detail-body {
+  display: grid;
+  grid-template-columns: minmax(180px, .65fr) minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: var(--column-gap);
+  align-items: start;
+  margin-top: 12px;
+}
+.scene-detail h2 { margin: 0; font-size: 30px; font-weight: 650; line-height: 1.25; }
+.scene-detail p { font-size: 14px; font-weight: 400; }
+.scene-detail .scene-deliverables { margin-top: 8px; font-size: 12px; }
+.scene-detail-meta { text-align: right; }
+.scene-detail .scene-service-link { margin: 0; font-size: 13px; }
+.scene-detail small { margin-top: 10px; padding-top: 0; border: 0; font-size: 10px; font-weight: 400; }
+
+@media (max-width: 1180px) {
+  .hero-copy { width: min(53vw, 650px); }
+  .hero h1 .hero-title-main { font-size: clamp(68px, 7.4vw, 88px); }
+  .hero h1 .hero-subtitle { font-size: clamp(36px, 4.2vw, 50px); }
+  .scene-detail-body { gap: 32px; }
+}
+@media (max-width: 860px) {
+  .hero { height: 900px; min-height: 900px; }
+  .hero-copy { top: 42%; width: min(64vw, 570px); }
+  .hero h1 .hero-title-main { font-size: clamp(64px, 9vw, 82px); }
+  .hero h1 .hero-subtitle { font-size: clamp(36px, 5.4vw, 46px); }
+  .hero-scene { inset: 0 -24% 0 -28%; }
+  .hero-zone-nav { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .hero-zone-nav button { min-height: 68px; padding-inline: 8px; font-size: 11px; }
+  .scene-detail-body { grid-template-columns: minmax(150px, .65fr) minmax(0, 1.35fr); }
+  .scene-detail-meta { grid-column: 2; text-align: left; }
+}
+@media (max-width: 600px) {
+  .hero { height: max(800px, 100svh); min-height: 800px; padding: 0; }
+  .hero-copy { top: 112px; left: var(--pad); width: calc(100% - 40px); transform: none; }
+  .hero-position { margin-bottom: 22px; font-size: 12px; }
+  .hero h1 .hero-title-main { font-size: clamp(56px, 16vw, 68px); }
+  .hero h1 .hero-subtitle { margin-top: 12px; font-size: clamp(32px, 9.5vw, 40px); }
+  .hero-lead { max-width: 340px; margin-top: 24px; font-size: 15px; line-height: 1.8; }
+  .hero-actions { margin-top: 24px; }
+  .hero .button { min-height: 46px; font-size: 12px; }
+  .hero-scene { inset: 39% -34% 14% -34%; }
+  .hero-scene-image { object-position: 55% center; }
+  .scene-hotspot { width: 34px; height: 34px; }
+  .hero-zone-nav { bottom: 62px; grid-template-columns: repeat(3, minmax(0, 1fr)); padding-inline: 8px; }
+  .hero-zone-nav button { min-height: 52px; gap: 8px; padding-inline: 12px; font-size: 11px; white-space: nowrap; }
+  .hero-zone-nav button span { font-size: 16px; }
+  .hero-scroll-cue { display: none; }
+  .js .hero.is-detail .scene-detail { bottom: 62px; padding: 16px 20px 18px; }
+  .scene-detail-body { grid-template-columns: minmax(0, 1fr); gap: 8px; margin-top: 8px; }
+  .scene-detail h2 { font-size: 24px; }
+  .scene-detail p { font-size: 13px; }
+  .scene-detail .scene-deliverables, .scene-detail small { display: none; }
+  .scene-detail-meta { grid-column: auto; text-align: left; }
+  .scene-detail-actions { gap: 18px; }
+}
+html[data-motion="reduced"] .hero.is-detail .hero-camera { transform: none; }

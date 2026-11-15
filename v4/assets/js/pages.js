@@ -88,6 +88,19 @@
     if (isReduced() || !revealObserver) el.classList.add('is-visible');
     else revealObserver.observe(el);
   });
+  function revealInView() {
+    document.querySelectorAll('.reveal:not(.is-visible), [data-reveal]:not(.is-visible)').forEach(el => {
+      const box = el.getBoundingClientRect();
+      if (box.bottom > -48 && box.top < window.innerHeight * 1.05) {
+        el.classList.add('is-visible');
+        if (revealObserver) revealObserver.unobserve(el);
+      }
+    });
+  }
+  requestAnimationFrame(revealInView);
+  window.addEventListener('hashchange', () => requestAnimationFrame(revealInView));
+  window.addEventListener('load', () => { revealInView(); setTimeout(revealInView, 700); });
+  setTimeout(revealInView, 1400);
   document.querySelectorAll('img').forEach(img => {
     img.loading = 'eager';
     img.addEventListener('error', () => {
@@ -181,6 +194,7 @@
     document.getElementById('systemValueTitle').textContent = data[0];
     document.getElementById('systemValueText').textContent = data[1];
     document.getElementById('systemValueOutput').textContent = data[2];
+    document.querySelectorAll('[data-system-value-image]').forEach(img => { img.classList.toggle('is-active', Number(img.dataset.systemValueImage) === index); });
     if (!isReduced() && valuePanel?.animate) valuePanel.animate([{ opacity: .25, transform: 'translate3d(0,16px,0)' }, { opacity: 1, transform: 'translate3d(0,0,0)' }], { duration: 400, easing: 'cubic-bezier(.22,.68,.16,1)' });
     if (focus) valueTabs[index].focus();
   }

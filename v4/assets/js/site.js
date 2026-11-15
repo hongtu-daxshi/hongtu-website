@@ -28,12 +28,12 @@
     { name: '交付服务', value: '让生产、施工与长期维保不打架，一个主体负责到底。', deliverables: '现场诊断 / 夜间施工 / 13 项检查 / 5 年维保', image: 'assets/img/detail-delivery.jpg', x: -11, y: -4, scale: 1.18 }
   ];
   const expertise = [
-    { caption: '地坪、墙面与天花、屋面、钢构防护；以统一基面与材质标准，托住每天的生产。', note: 'AI 场景示意' },
-    { caption: '划线、安全标识、区域看板与定置管理；让人流、物流和参观路线各自清楚。', note: 'AI 场景示意' },
-    { caption: '照明、机电与环保配套由专业团队协同，红涂统一接口、进度与验收。', note: 'AI 场景示意' },
-    { caption: '门头、外立面、文化空间与参观动线；让厂区形象成为企业实力的一部分。', note: 'AI 场景示意' },
+    { caption: '地坪、墙面与天花、屋面、钢构防护；以统一基面与材质标准，托住每天的生产。', note: '' },
+    { caption: '划线、安全标识、区域看板与定置管理；让人流、物流和参观路线各自清楚。', note: '' },
+    { caption: '照明、机电与环保配套由专业团队协同，红涂统一接口、进度与验收。', note: '' },
+    { caption: '门头、外立面、文化空间与参观动线；让厂区形象成为企业实力的一部分。', note: '' },
     { caption: '生产、质量与数字看板进入真实现场；让管理者更快看到目标、异常与责任。', note: '项目资料照片' },
-    { caption: '现场诊断、夜间施工、逐项验收与长期维保；交付之后，仍然有人负责。', note: 'AI 场景示意' }
+    { caption: '现场诊断、夜间施工、逐项验收与长期维保；交付之后，仍然有人负责。', note: '' }
   ];
 
   function applyMotion() {
@@ -332,6 +332,22 @@
     $$('.reveal').forEach(el => el.classList.add('is-visible'));
     $('#vision')?.classList.add('is-visible');
   }
+
+  const revealInView = () => {
+    $$('.reveal:not(.is-visible)').forEach(el => {
+      const box = el.getBoundingClientRect();
+      if (box.bottom > -48 && box.top < window.innerHeight * 1.05) el.classList.add('is-visible');
+    });
+    const visionBox = $('#vision');
+    if (visionBox && !visionBox.classList.contains('is-visible')) {
+      const box = visionBox.getBoundingClientRect();
+      if (box.bottom > 0 && box.top < window.innerHeight) visionBox.classList.add('is-visible');
+    }
+  };
+  requestAnimationFrame(revealInView);
+  window.addEventListener('hashchange', () => requestAnimationFrame(revealInView));
+  window.addEventListener('load', () => { revealInView(); setTimeout(revealInView, 700); });
+  setTimeout(revealInView, 1400);
 
   window.addEventListener('scroll', requestScrollUpdate, { passive: true });
   window.addEventListener('resize', requestScrollUpdate, { passive: true });

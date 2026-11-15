@@ -220,5 +220,16 @@ html[data-motion="reduced"] .page-hero>img{transform:none}
 html[data-motion="reduced"] .page-hero-copy>*{opacity:1;transform:none;transition:none}
 
 html:not(.js) .motion-toggle,html:not(.js) .case-filter,html:not(.js) .system-value-tabs,html:not(.js) .map-buttons,html:not(.js) .brief-button{display:none}
+/* 无 JS：菜单按钮点了没反应，改为常驻一条可横向滚动的导航�� */
+html:not(.js) .menu-toggle{display:none}
+@media (max-width:1180px){
+  html:not(.js) .desktop-nav{position:absolute;top:var(--header-h);right:0;left:0;display:flex;gap:18px;align-items:center;padding:9px var(--pad);overflow-x:auto;white-space:nowrap;background:var(--paper);color:var(--ink);border-bottom:1px solid var(--line)}
+  html:not(.js) .desktop-nav a{padding:4px 0;font-size:13px;opacity:1}
+}
 html:not(.js) .system-value-tool{grid-template-columns:minmax(0,1fr)}
+@media(max-width:600px){
+  .case-filter{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;padding-bottom:4px;scrollbar-width:none}
+  .case-filter::-webkit-scrollbar{display:none}
+  .case-filter button{flex:0 0 auto}
+}
 @media(max-width:860px){.system-value-tabs button[aria-selected="true"]{transform:none}}
